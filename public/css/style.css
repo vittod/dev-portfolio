@@ -1,0 +1,9 @@
+* {
+    margin: 0
+}      
+
+.my-card {
+    width: 250px;
+    height: 300px;
+    /* pointer-events: none; */
+}
