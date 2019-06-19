@@ -1,9 +1,10 @@
 // wait until libs are loaded and gneral setup
 window.addEventListener('load', function() {
-    preload()
-    setup();
-    draw()
-    createChain()
+    // preload()
+    // setup();
+    // draw()
+    
+
 
     Events.on(engine, 'collisionActive', function(e) {
         pairs = e.pairs
@@ -35,22 +36,27 @@ const MouseConstraint = Matter.MouseConstraint
 const Mouse = Matter.Mouse
 const Collisions = Matter.SAT
 const Events = Matter.Events
+// const Vertices = Matter.Vertices
+// const Svg = Matter.Svg
 
 //////////////////////////////////////////// engine & world
 const engine = Engine.create();
 const world = engine.world
 //////////////////////////////////////////// app namespace
-let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLink,
+let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLink, magnet, magnetPic,
     colliCount = 0,
     buttons = [],
     cards = [],
     boxes = [],
     chain = [],
-    constraints = [];
+    constraints = [],
+    magnets = [];
+    // MAGNET_PATH = 'M39.182 3.365 C 35.124 15.995,34.402 16.830,26.628 17.873 C 15.831 19.321,14.354 23.246,17.277 42.732 L 18.639 51.811 9.051 54.995 L -0.536 58.179 0.952 76.686 C 2.896 100.863,2.948 108.217,1.273 122.065 C 0.509 128.384,0.411 135.956,1.056 138.892 L 2.229 144.231 201.114 144.231 L 400.000 144.231 400.000 100.302 L 400.000 56.374 391.346 51.923 C 383.703 47.992,382.692 46.721,382.692 41.044 L 382.692 34.615 360.096 34.467 C 347.668 34.386,334.904 34.093,331.731 33.816 C 328.558 33.539,312.548 32.710,296.154 31.973 C 259.920 30.344,254.537 29.573,253.092 25.809 C 252.451 24.139,252.785 23.383,253.868 24.052 C 256.647 25.770,256.079 22.687,252.823 18.382 C 251.271 16.329,250.000 12.786,250.000 10.507 C 250.000 -0.172,251.773 -0.000,141.615 -0.000 C 46.784 -0.000,40.194 0.217,39.182 3.365';
 
 //////////////////////////////////////////// app setup & draw loop
 function preload() {
     chainLink = loadImage('img/chain-link.png')
+    magnetPic = loadImage('img/magnet.png')
 }
 function setup() {
     canvas = new Canvas(windowWidth, windowHeight)
@@ -59,12 +65,10 @@ function setup() {
 
     ground = new Ground()
     Engine.run(engine)
-    
 
-    // createElm()
+    createMouseConstraint()   
     
-    createMouseConstraint()    
-    
+    createChain()
 }
 
 function draw() {
@@ -84,18 +88,6 @@ function draw() {
 
     chain.forEach(el => el.show())
 
-    // if (boxes.length > 0 && chain.length > 0) {
-    //     // console.log('coll', Collisions.collides(chain[9].body, boxes[0].body).collided)
-    //     console.log('force', boxes[0].body)
-    // }
-
-    // if (constraints.length > 0) {
-    //     console.log('const', constraints[0])
-    // }
-
-    // if (currDrag) console.log('dr', currDrag.speed)
-    
-
 
     //console.log('cards & boxes', cards.length, boxes.length, 'bodies', world.bodies.length)
 }
@@ -108,27 +100,45 @@ function windowResized() {
 function createElm(){
     boxes.push(new Box(mouseX, mouseY, 250, 300))
     cards.push(new Card(mouseX, mouseY, 250, 300))
+    // magnets.push(new Magnet(mouseX, mouseY))
 }
 
 function createChain() {
     let prev = {el: null, dist: null}
-    for (let i = 0; i < 10; i++) {
+    for (let i = 4; i >= 0; i--) {
         //console.log('prev', prev)
-        let option = !prev.el ? {isStatic: true, friction: 0.1, restitution: 0.7} : {friction: 0.1, restitution: 0.7}
-        //console.log('opt', option)
-        let parti = new Particle(100 + prev.dist, 50, 10, option)
+        let option = !prev.el ? {isStatic: true, friction: 0.1, restitution: 0.3} : {friction: 0.3, restitution: 0.3}
+        let parti, opt, xA, yA, xB, yB, len;
+        if (i > 0) {
+            parti = new Particle(500 + prev.dist, 50 + prev.dist, 20, 49, option) 
+            xA = 0
+            yA = 21
+            xB = 0
+            yB = -21
+            len = 14
+            console.log('parti', parti)
+        } else {
+            parti = new Magnet(600 + prev.dist, 50 + prev.dist, 208, 75, option ) //, {angle: 0.78, restitution: 0.3})
+            xA = 0
+            yA = 21
+            xB = 0
+            yB = -38
+            len = 16
+        }
         if (prev.el) {
-            let opt = {
+            opt = {
                 bodyA: prev.el.body,
+                pointA: {x: xA, y: yA},
                 bodyB: parti.body,
-                stiffness: 0.4,
-                length: 20
+                pointB: {x: xB, y: yB},
+                stiffness: 0.7,
+                length: len
             }
             let constraint = Constraint.create(opt)
             World.add(world, constraint)
         }
         chain.push(parti)
-        prev.dist += 50
+        prev.dist += 25
         prev.el = parti
     }
 }
@@ -192,10 +202,11 @@ class Canvas {
 }
 
 class Particle {
-    constructor(x, y, r, option){
-        this.body = Bodies.circle(x, y, r, option)
+    constructor(x, y, w, h, option){
+        this.body = Bodies.rectangle(x, y, w, h, option)
         this.pos = this.body.position
-        this.r = r
+        this.w = w
+        this.h = h
         World.add(world, this.body);
     }
 
@@ -207,12 +218,12 @@ class Particle {
 
         push()
         translate(pos.x, pos.y)
-        // rectMode(CENTER)
-        //rotate(angle)
-        // FileList(150)
         //ellipse(0, 0, this.r * 2)
+        // rectMode(CENTER)
+        // rect(0, 0, this.w, this.h)
+        rotate(angle)
         imageMode(CENTER)
-        image(chainLink, 0, 0, 75, 208)
+        image(chainLink, 0, 0, 25, 60)
         pop()
     }
 
@@ -227,7 +238,7 @@ class Particle {
 
 class Ground {
     constructor() {
-        this.ground = Bodies.rectangle(0, height, window.innerWidth *2, 10, {isStatic: true})
+        this.ground = Bodies.rectangle(0, height, window.innerWidth *2, 2, {isStatic: true})
         World.add(world, this.ground)
     }
 }
@@ -322,3 +333,64 @@ class Box {
         World.remove(world, this.body)
     }
 }
+
+class Magnet {
+    constructor(x, y, w, h, option) {
+    //     this.points = setPathData(MAGNET_PATH)
+    //     console.log('points', this.points)
+    //     this.body = Bodies.fromVertices(x, y, Vertices.scale(this.points, 0.5, 0.5))
+        this.body = Bodies.rectangle(x, y, w, h, option)
+        this.pos = this.body.position
+        this.w = w
+        this.h = h
+        World.add(world, this.body)
+    }
+
+    show() {
+        let angle = this.body.angle
+        let pos = this.body.position
+        this.pos = pos
+        this.pos.angle = angle
+
+        push()
+        translate(pos.x, pos.y)
+        // rectMode(CENTER)
+        // rect(0, 0, this.w, this.h)
+        imageMode(CENTER)
+        rotate(angle)
+        imageMode(CENTER)
+        image(magnetPic, 0, 0, 208, 75)
+
+        // beginShape()
+        // this.points.forEach(el => vertex(el.x, el.y))
+        // endShape()
+        pop()
+    }
+
+    isOffscreen() {
+        return this.body.position.y > height + 100
+    }
+
+    remove() {
+        World.remove(world, this.body)
+    }
+}
+
+// function setPathData(pathData) {
+//     let parts = pathData && pathData.match(/[mlhvcsqtaz][^mlhvcsqtaz]*/ig),
+//         coords;
+//     let array = [];
+  
+//     for (let i = 0, l = parts && parts.length; i < l; i++) {
+//       coords = parts[i].match(/[+-]?(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/g);
+  
+//       for (let j = 0; j < coords.length; j+=2) {
+//         array.push({
+//           x: +coords[j],
+//           y: +coords[j + 1]
+//         })
+//       }
+//     }
+  
+//     return array;
+//   }
