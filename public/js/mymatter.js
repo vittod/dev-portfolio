@@ -68,18 +68,38 @@ function setup() {
     Engine.run(engine)
 
     createMouseConstraint()   
-    
     createChain()
 }
 
-function keyPressed() {
-    console.log('key', keyCode)
-    switch(keyCode) {
-        case LEFT_ARROW: console.log('left'); break
-        case RIGHT_ARROW: console.log('right'); break
-        case DOWN_ARROW: console.log('down'); break
-        case UP_ARROW: console.log('up'); break
-    }
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight)
+}
+
+// function keyIsPressed() {
+//     console.log('key', keyCode)
+//     switch(keyCode) {
+//         case LEFT_ARROW: moveLeft(); console.log('left'); break
+//         case RIGHT_ARROW: moveRight(); console.log('right'); break
+//         case DOWN_ARROW: moveDown(); console.log('down'); break
+//         case UP_ARROW: moveUp(); console.log('up'); break
+//     }
+// }
+
+function moveLeft() {
+    Body.setVelocity(chain[0].body, {x: -10, y: 0})
+    Body.setPosition(chain[0].body, {x: chain[0].body.position.x - 5, y: chain[0].body.position.y})
+}
+function moveRight() {
+    // Body.setVelocity(chain[0].body, {x: -10, y: 0})
+    Body.setPosition(chain[0].body, {x: chain[0].body.position.x + 5, y: chain[0].body.position.y})
+}
+function moveDown() {
+    // Body.setVelocity(chain[0].body, {x: -10, y: 0})
+    Body.setPosition(chain[0].body, {x: chain[0].body.position.x, y: chain[0].body.position.y + 5})
+}
+function moveUp() {
+    // Body.setVelocity(chain[0].body, {x: -10, y: 0})
+    Body.setPosition(chain[0].body, {x: chain[0].body.position.x, y: chain[0].body.position.y - 5})
 }
 
 function draw() {
@@ -103,21 +123,7 @@ function draw() {
 
     constraints.forEach((el, i) => {
         if (el.label && el.label == 'link') {
-            // console.log('el xA', el.bodyA.position.x + el.pointA.x + (el.bodyB.position.x + el.pointB.x + 2.5 - el.bodyA.position.x + el.pointA.x - 2.5 / 2))
-            // if (i = 2) console.log('ely ', el.bodyA.position.y + el.pointA.y + ((el.bodyB.position.y + el.pointB.y - el.bodyA.position.y + el.pointA.y) / 2)  )
-
-            // let linkCenterVector = createVector(
-            //     el.bodyA.position.x + el.pointA.x + ((el.bodyB.position.x + el.pointB.x + 2.5 - el.bodyA.position.x + el.pointA.x - 2.5) / 2),
-            //     el.bodyA.position.y + el.pointA.y + ((el.bodyB.position.y + el.pointB.y - el.bodyA.position.y + el.pointA.y) / 2) -20
-            // )
-
-            // if (i == 1) {
-            //     console.log('anka', el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x)
-            //     console.log('hypo', el.length)
-            //     console.log('cosA', el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x / el.length)
-            //     console.log('degA', atan(el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x / el.length))
-            // }
-
+       
             let atano = atan((el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x) / el.length)
             let linkCenter = createVector(
                 (el.bodyA.position.x + el.pointA.x - 2.5 + el.bodyB.position.x + el.pointB.x + 2.5) / 2,
@@ -125,19 +131,7 @@ function draw() {
             )
 
             push()
-            // rectMode(CORNERS)
-            // rect(
-            //     el.bodyA.position.x + el.pointA.x - 2.5, 
-            //     el.bodyA.position.y + el.pointA.y,
-            //     el.bodyB.position.x + el.pointB.x + 2.5, 
-            //     el.bodyB.position.y + el.pointB.y
-            // )
-
             translate(linkCenter.x, linkCenter.y)
-            // rectMode(CENTER)
-            // rotate(atano * -1)
-            // rect(0, 0, 5, 49)
-
             imageMode(CENTER)
             rotate(atano * -1)
             image(chainLinkTwo, 0, 0, 5, 49)
@@ -145,12 +139,14 @@ function draw() {
         }
     })
 
+    if (keyIsDown(LEFT_ARROW)) moveLeft()
+    if (keyIsDown(RIGHT_ARROW)) moveRight()
+    if (keyIsDown(DOWN_ARROW)) moveDown()
+    if (keyIsDown(UP_ARROW)) moveUp()
+
     //console.log('cards & boxes', cards.length, boxes.length, 'bodies', world.bodies.length)
 }
 
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight)
-}
 
 //////////////////////////////////////////// actions
 function createElm(){
@@ -160,9 +156,9 @@ function createElm(){
 }
 
 function createChain() {
-    let chainOrigin = {x: windowWidth / 2, y: windowHeight / 6 * -1}
+    let chainOrigin = {x: windowWidth / 2, y: windowHeight / 6 * -1 }
     let prev = {el: null, dist: null}
-    for (let i = 4; i >= 0; i--) {
+    for (let i = 12; i >= 0; i--) {
         //console.log('prev', prev)
         let option = !prev.el ? {mass: 3, isStatic: true, friction: 0.1, restitution: 0} : {mass: 3, friction: 0.3, restitution: 0}
         let parti, opt, xA, yA, xB, yB, len;
