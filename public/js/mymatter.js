@@ -3,9 +3,8 @@ window.addEventListener('load', function() {
     // preload()
     // setup();
     // draw()
+
     
-
-
     Events.on(engine, 'collisionActive', function(e) {
         pairs = e.pairs
         pairs.forEach((el) => {
@@ -31,6 +30,7 @@ window.addEventListener('load', function() {
 const Engine = Matter.Engine
 const World = Matter.World
 const Bodies = Matter.Bodies
+const Body = Matter.Body
 const Constraint = Matter.Constraint
 const MouseConstraint = Matter.MouseConstraint
 const Mouse = Matter.Mouse
@@ -43,7 +43,7 @@ const Events = Matter.Events
 const engine = Engine.create();
 const world = engine.world
 //////////////////////////////////////////// app namespace
-let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLink, magnet, magnetPic,
+let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLink, chainLinkTwo, magnet, magnetPic,
     colliCount = 0,
     buttons = [],
     cards = [],
@@ -56,6 +56,7 @@ let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLi
 //////////////////////////////////////////// app setup & draw loop
 function preload() {
     chainLink = loadImage('img/chain-link.png')
+    chainLinkTwo = loadImage('img/chain-link_2.png')
     magnetPic = loadImage('img/magnet.png')
 }
 function setup() {
@@ -69,6 +70,16 @@ function setup() {
     createMouseConstraint()   
     
     createChain()
+}
+
+function keyPressed() {
+    console.log('key', keyCode)
+    switch(keyCode) {
+        case LEFT_ARROW: console.log('left'); break
+        case RIGHT_ARROW: console.log('right'); break
+        case DOWN_ARROW: console.log('down'); break
+        case UP_ARROW: console.log('up'); break
+    }
 }
 
 function draw() {
@@ -88,6 +99,51 @@ function draw() {
 
     chain.forEach(el => el.show())
 
+    // console.log('ang', constraints[0])
+
+    constraints.forEach((el, i) => {
+        if (el.label && el.label == 'link') {
+            // console.log('el xA', el.bodyA.position.x + el.pointA.x + (el.bodyB.position.x + el.pointB.x + 2.5 - el.bodyA.position.x + el.pointA.x - 2.5 / 2))
+            // if (i = 2) console.log('ely ', el.bodyA.position.y + el.pointA.y + ((el.bodyB.position.y + el.pointB.y - el.bodyA.position.y + el.pointA.y) / 2)  )
+
+            // let linkCenterVector = createVector(
+            //     el.bodyA.position.x + el.pointA.x + ((el.bodyB.position.x + el.pointB.x + 2.5 - el.bodyA.position.x + el.pointA.x - 2.5) / 2),
+            //     el.bodyA.position.y + el.pointA.y + ((el.bodyB.position.y + el.pointB.y - el.bodyA.position.y + el.pointA.y) / 2) -20
+            // )
+
+            // if (i == 1) {
+            //     console.log('anka', el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x)
+            //     console.log('hypo', el.length)
+            //     console.log('cosA', el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x / el.length)
+            //     console.log('degA', atan(el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x / el.length))
+            // }
+
+            let atano = atan((el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x) / el.length)
+            let linkCenter = createVector(
+                (el.bodyA.position.x + el.pointA.x - 2.5 + el.bodyB.position.x + el.pointB.x + 2.5) / 2,
+                (el.bodyA.position.y + el.pointA.y + el.bodyB.position.y + el.pointB.y) / 2
+            )
+
+            push()
+            // rectMode(CORNERS)
+            // rect(
+            //     el.bodyA.position.x + el.pointA.x - 2.5, 
+            //     el.bodyA.position.y + el.pointA.y,
+            //     el.bodyB.position.x + el.pointB.x + 2.5, 
+            //     el.bodyB.position.y + el.pointB.y
+            // )
+
+            translate(linkCenter.x, linkCenter.y)
+            // rectMode(CENTER)
+            // rotate(atano * -1)
+            // rect(0, 0, 5, 49)
+
+            imageMode(CENTER)
+            rotate(atano * -1)
+            image(chainLinkTwo, 0, 0, 5, 49)
+            pop()
+        }
+    })
 
     //console.log('cards & boxes', cards.length, boxes.length, 'bodies', world.bodies.length)
 }
@@ -104,26 +160,29 @@ function createElm(){
 }
 
 function createChain() {
+    let chainOrigin = {x: windowWidth / 2, y: windowHeight / 6 * -1}
     let prev = {el: null, dist: null}
     for (let i = 4; i >= 0; i--) {
         //console.log('prev', prev)
-        let option = !prev.el ? {isStatic: true, friction: 0.1, restitution: 0.3} : {friction: 0.3, restitution: 0.3}
+        let option = !prev.el ? {mass: 3, isStatic: true, friction: 0.1, restitution: 0} : {mass: 3, friction: 0.3, restitution: 0}
         let parti, opt, xA, yA, xB, yB, len;
         if (i > 0) {
-            parti = new Particle(500 + prev.dist, 50 + prev.dist, 20, 49, option) 
+            parti = new Particle(chainOrigin.x + prev.dist, chainOrigin.y + prev.dist, 20, 49, option) 
             xA = 0
             yA = 21
             xB = 0
             yB = -21
-            len = 14
+            len = 49
             console.log('parti', parti)
         } else {
-            parti = new Magnet(600 + prev.dist, 50 + prev.dist, 208, 75, option ) //, {angle: 0.78, restitution: 0.3})
+            option.mass = 20
+            option.density = 0.5
+            parti = new Magnet(chainOrigin.x + 100 + prev.dist, chainOrigin.y + prev.dist, 208, 75, option ) 
             xA = 0
             yA = 21
             xB = 0
             yB = -38
-            len = 16
+            len = 40
         }
         if (prev.el) {
             opt = {
@@ -131,14 +190,16 @@ function createChain() {
                 pointA: {x: xA, y: yA},
                 bodyB: parti.body,
                 pointB: {x: xB, y: yB},
-                stiffness: 0.7,
-                length: len
+                stiffness: 1,
+                length: len,
+                label: 'link'
             }
             let constraint = Constraint.create(opt)
             World.add(world, constraint)
+            constraints.push(constraint)
         }
         chain.push(parti)
-        prev.dist += 25
+        prev.dist += 52
         prev.el = parti
     }
 }
@@ -162,9 +223,9 @@ function createMouseConstraint() {
 
     Events.on(mouConst, 'startdrag', function(e) {
         currDrag = e.body
-        if (constraints.length > 0) {
+        if (constraints.length > 5) {
             constraints.forEach((el, i) => {
-                if (currDrag.id == el.bodyA.id || currDrag.id == el.bodyB.id) startCheckRip(el, i)
+                if (currDrag.id == el.bodyA.id || currDrag.id == el.bodyB.id && el.body.label != 'link') startCheckRip(el, i)
                 // console.log('el', el)
             })
         }
