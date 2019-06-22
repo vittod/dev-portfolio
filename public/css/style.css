@@ -1,9 +1,98 @@
 * {
-    margin: 0
-}      
+    margin: 0;
+    
+}   
+
+section {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 3.5em;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: rgba(248, 248, 255, 0.5);
+    background: #000;
+}
+section .container {
+    height: calc(100% - 10em);
+}
+
+#music, #contact {
+    transform: translateY(100%);
+    transition: 1s transform ease-in-out;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+header {
+    height: 3.5em;
+    background: #000 !important;
+} 
+
+#collapse-nav {
+    height: 3.5em;
+    transform: translateY(-100%);
+    transition: 1s transform ease-in-out;
+    background: #000 !important;
+    color: rgba(248, 248, 255, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+#collapse-nav * {
+    font-family: monospace;
+    color: rgba(248, 248, 255, 0.5);
+}
+.nav-active {
+    color: rgba(248, 248, 255, 1) !important;
+}
+.translate-up {
+    transform: translateY(0%) !important;
+    transition: 1s transform ease-in-out;
+}
+
+#social-links {
+    text-align: center;
+}
+#social-links > * {
+margin: 5px;
+}
+
+.media img {
+    height: 173px;
+}
+
+.exit {
+    position: absolute;
+    top: 2.5em;
+    right: 2.5em;
+    color: ghostwhite;
+    z-index: 20;
+}
+#exit-game {
+    display: none;
+}
+.exit:hover {
+    color: rgba(248, 248, 255, 0.3);
+}
+
+canvas#main-game {
+    position: fixed;
+    top: 0;    
+    transform: translateX(100%);
+    transition-duration: 2s;
+}
+
+.show-game {
+    transform: translateX(0) !important;
+    transition-duration: 2s;
+}
 
 .my-card {
     width: 250px;
     height: 300px;
     /* pointer-events: none; */
+}
+.card-leave {
+    transform: translateX(100%);
+    transition-duration: 2s;
 }

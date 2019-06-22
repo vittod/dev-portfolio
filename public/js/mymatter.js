@@ -4,25 +4,7 @@ window.addEventListener('load', function() {
     // setup();
     // draw()
 
-    
-    Events.on(engine, 'collisionActive', function(e) {
-        pairs = e.pairs
-        pairs.forEach((el) => {
-            // console.log('bA', el.bodyA.id, 'bB', el.bodyB.id, 'chain', chain[chain.length - 1].id, 'box', boxes[boxes.lenth - 1].id)
-            if(boxes.length > 0 && !chain[chain.length - 1].isLocked) {
-                if (el.bodyA.id == chain[chain.length - 1].body.id || el.bodyA == boxes[boxes.length - 1].body.id
-                && el.bodyB.id == boxes[boxes.length - 1].body.id || el.bodyB == chain[chain.length - 1].body.id) {
-                    console.log('match', colliCount)
-                    colliCount += 1
-                    if (colliCount > 50) {
-                        lockBox(el.bodyA, el.bodyB)
-                    }
-                }
-            }
-        })
-    })
-
-    
+    hookUpCollisionEvents()    
 
 })
 
@@ -39,9 +21,10 @@ const Events = Matter.Events
 // const Vertices = Matter.Vertices
 // const Svg = Matter.Svg
 
-//////////////////////////////////////////// engine & world
+//////////////////////////////////////////// const
 const engine = Engine.create();
 const world = engine.world
+const navBar = $('#collapse-nav')
 //////////////////////////////////////////// app namespace
 let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLink, chainLinkTwo, magnet, magnetPic,
     colliCount = 0,
@@ -50,10 +33,11 @@ let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLi
     boxes = [],
     chain = [],
     constraints = [],
-    magnets = [];
+    magnets = [],
+    gameIsVisible = false;
     // MAGNET_PATH = 'M39.182 3.365 C 35.124 15.995,34.402 16.830,26.628 17.873 C 15.831 19.321,14.354 23.246,17.277 42.732 L 18.639 51.811 9.051 54.995 L -0.536 58.179 0.952 76.686 C 2.896 100.863,2.948 108.217,1.273 122.065 C 0.509 128.384,0.411 135.956,1.056 138.892 L 2.229 144.231 201.114 144.231 L 400.000 144.231 400.000 100.302 L 400.000 56.374 391.346 51.923 C 383.703 47.992,382.692 46.721,382.692 41.044 L 382.692 34.615 360.096 34.467 C 347.668 34.386,334.904 34.093,331.731 33.816 C 328.558 33.539,312.548 32.710,296.154 31.973 C 259.920 30.344,254.537 29.573,253.092 25.809 C 252.451 24.139,252.785 23.383,253.868 24.052 C 256.647 25.770,256.079 22.687,252.823 18.382 C 251.271 16.329,250.000 12.786,250.000 10.507 C 250.000 -0.172,251.773 -0.000,141.615 -0.000 C 46.784 -0.000,40.194 0.217,39.182 3.365';
 
-//////////////////////////////////////////// app setup & draw loop
+//////////////////////////////////////////// app setup
 function preload() {
     chainLink = loadImage('img/chain-link.png')
     chainLinkTwo = loadImage('img/chain-link_2.png')
@@ -61,7 +45,8 @@ function preload() {
 }
 function setup() {
     canvas = new Canvas(windowWidth, windowHeight)
-    canvas.origin.style('z-index', '-10')
+    canvas.origin.id('main-game')
+    canvas.origin.style('z-index', '5')
     canvas.origin.doubleClicked(createElm) 
 
     ground = new Ground()
@@ -75,15 +60,32 @@ function windowResized() {
     resizeCanvas(windowWidth, windowHeight)
 }
 
-// function keyIsPressed() {
-//     console.log('key', keyCode)
-//     switch(keyCode) {
-//         case LEFT_ARROW: moveLeft(); console.log('left'); break
-//         case RIGHT_ARROW: moveRight(); console.log('right'); break
-//         case DOWN_ARROW: moveDown(); console.log('down'); break
-//         case UP_ARROW: moveUp(); console.log('up'); break
-//     }
-// }
+//////////////////////////////////////////// events
+
+function keyPressed(e) {
+    // console.log('key', keyCode, e.key)
+    switch(e.key) {
+        case 'v': toggleGameView(); console.log('keyP', e.key); break
+    }
+}
+function toggleGameView() {
+    if (!gameIsVisible)  {
+        console.log('got here')
+        canvas.origin.addClass('show-game')
+        navBar.removeClass('translate-up')
+    } else {
+        canvas.origin.removeClass('show-game')
+        boxes.forEach(el => el.remove())
+        boxes = []
+        cards.forEach(el => {
+            el.unhook()
+            el.origin.remove()
+        })
+        cards = []
+        navBar.addClass('translate-up')
+    }
+    gameIsVisible = !gameIsVisible
+}
 
 function moveLeft() {
     Body.setVelocity(chain[0].body, {x: -10, y: 0})
@@ -102,6 +104,26 @@ function moveUp() {
     Body.setPosition(chain[0].body, {x: chain[0].body.position.x, y: chain[0].body.position.y - 5})
 }
 
+function hookUpCollisionEvents() {
+    Events.on(engine, 'collisionActive', function(e) {
+        pairs = e.pairs
+        pairs.forEach((el) => {
+            // console.log('bA', el.bodyA.id, 'bB', el.bodyB.id, 'chain', chain[chain.length - 1].id, 'box', boxes[boxes.lenth - 1].id)
+            if(boxes.length > 0 && !chain[chain.length - 1].isLocked) {
+                if (el.bodyA.id == chain[chain.length - 1].body.id || el.bodyA == boxes[boxes.length - 1].body.id
+                && el.bodyB.id == boxes[boxes.length - 1].body.id || el.bodyB == chain[chain.length - 1].body.id) {
+                    console.log('match', colliCount)
+                    colliCount += 1
+                    if (colliCount > 50) {
+                        lockBox(el.bodyA, el.bodyB)
+                    }
+                }
+            }
+        })
+    })
+}
+
+//////////////////////////////////////////// draw loop
 function draw() {
     background(100)
     boxes = boxes.filter((boxy, i) => {

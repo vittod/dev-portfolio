@@ -7,18 +7,149 @@
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://kit.fontawesome.com/e36035d0ea.js"></script>
 </head>
 <body>
+    <header>
+        <!-- <i class="fab fa-github"></i> -->
+        <nav id="collapse-nav"  class="navbar fixed-top navbar-expand-lg translate-up navbar-dark">
+            <a id="brand-link" class="navbar-brand nav-active" href="#main">Alexander Getan</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a id="projects-link" class="nav-item nav-link" data-toggle="modal" data-target="#explainPortfolioGame" href="#">Projects</a>
+                    <a id="music-link" class="nav-item nav-link" href="#music">Music / DJ</a>
+                    <a id="contact-link" class="nav-item nav-link" href="#">Contact</a>
+                    <!-- <a class="nav-item nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a> -->
+                </div>
+            </div>
+
+        </nav>
+    </header>
+
+    <section id="main">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div id="social-links" class="col col-md-6">
+                    <a  href="#"><i class="fab fa-github fa-2x"></i></a> 
+                    <a  href="#"><i class="fab fa-linkedin fa-2x"></i></a> 
+                    <a  href="#"><i class="fab fa-soundcloud fa-2x"></i></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-12">
+                    <h1>Hello,</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-md-6">
+                    <h2>I'm Marcus Alexander Getan Wagner.</h2>
+                    
+                    <p>I'm a Full stack Web Developer and an enthusiast for building great things in general!</p>
+                    <p>
+                        Freelancing in Web Development for some time now, my professional focus was directed to the music and entertainment industry up until recently. 
+                        I've been part of a group of 8 who built an electronic music club in Hamburg over the last five years. 
+                        Currently I'm looking for the right fit in tec. 
+                    </p>
+                    <p>
+                        I'm also a DJ. If you're intrested check out my <a href="#">music section</a> <br>
+                        If you'd like to book me or have a job offer, please don't hesitate to <a href="#">constact me!</a>
+                    </p>
+
+                </div>
+                <div class="col col-md-6">
+                    <h2>My Tech Stack:</h2>
+                    <h6>Javascript: ES6 ++ / Typescript 
+                        <i class="fas fa-circle"></i></i> Server: Node / Express 
+                        <i class="fas fa-circle"></i> DB: MySQL / PostgreSQL / Redis <i class="fas fa-ellipsis-h"></i> Hosting: AWS
+                        <i class="fas fa-circle"></i> Transfer: HTTP / WebSocket(Socket.io)
+                        <i class="fas fa-circle"></i> Front: React / Vue / Angular 2+ 
+                        <i class="fas fa-circle"></i> Tools: Redux / Handlebars / jQuery / P5 / matter.js
+                        <i class="fas fa-circle"></i> Testing: Jest
+                        <i class="fas fa-circle"></i> General Web: HTML5 / CSS3 / Bootstrap / Wordpress
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="music">
+        <div class="container">
+            <div class="row">
+                <div class="col"><br></div>
+            </div>
+            <div class="row">
+                <div class="col col-md-12">
+                    <h1>music music music</h1>
+                        <div class="media">
+                            <div class="media-body">
+                                <h5 class="mt-0">Center-aligned media</h5>
+                                <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
+                                <p class="mb-0">Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+                            </div>
+                            <img src="img/alexander-getan_artist.jpg" class="align-self-center ml-3" alt="Alexander Getan artist photo">
+                        </div>
+                      
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <fiv class="col col-md-12">
+                <h1>contact contact</h1>
+            </fiv>
+        </div>
+    </section>
+
+    <!-- Projects & Game modal -->
+    <div class="modal fade" id="explainPortfolioGame" tabindex="-1" role="dialog" aria-labelledby="explainPortfolioGame" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="explainPortfolioGameTitle">Catch my projects</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span id="modal-close" aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Projects in Web Development are fast in different ways.. and so are mine! 
+                        </p>
+                        <p>
+                            To catch them - I've got to admit they're kind of jumpy - you have to drop the e-magnet on top of them and activate the power. Once catched, get them to the slot to mount them there and unlock the project details!
+                        </p>
+                        <p>use the ARROW KEYS to control the magnet and</p>
+                        <p>press the SPACE BAR (and keep it pressed) until you reached the slot</p>
+                        <p>once the project is mounted you can look at the details or eject it..</p>
+                        <p>have fun!</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button id="projects" type="button" class="btn btn-outline-secondary" data-dismiss="modal">Start the Game!</button>
+                        <!-- <button type="button" data-toggle="tooltip" data-placement="bottom" title="comming soon" class="btn btn-outline-secondary disabled" data-dismiss="modal">Save changes</button> -->
+                        <button type="button" data-toggle="tooltip" data-placement="bottom" title="not yet .. ;-)" class="btn btn-outline-secondary disabled" data-dismiss="modal">Cut the Scrap</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="exit">
+        <i id="exit-game" class="fas fa-times fa-2x"></i>
+    </div>
     
-    <script src="js/pathseg.js"></script>
-    <script src="js/decomp.min.js" type="text/javascript"></script>
+    <!-- <script src="js/pathseg.js"></script> -->
+    <!-- <script src="js/decomp.min.js" type="text/javascript"></script> -->
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/p5.js"></script>
     <script src="js/p5.dom.js"></script>
     <!-- <script src="js/p5.sound.js"></script> -->
+    <script src="js/ctrl.js"></script>
     <script src="js/matter.js"></script>
-    <!-- <script src="js/matter-collision-events.js"></script> -->
     <script src="js/mymatter.js"></script>
 </body>
 </html>
