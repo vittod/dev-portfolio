@@ -19,6 +19,10 @@ doc.on('click', (e) => {
         case 'explainPortfolioGame': highlightLink('clear'); break
         case 'modal-close': highlightLink('clear'); break
     }
+}).on('keydown', (e) => {
+    switch(e.key) {
+        case 'Escape':  toggleGameView(); toggleGameExit(200); highlightLink('clear'); break
+    }
 })
 
 function toggleGameExit(timer) {

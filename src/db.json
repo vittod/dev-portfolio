@@ -1,0 +1,40 @@
+{
+    "projects": [
+        {
+            "name": "Disconet",
+            "github": "https://github.com/vittod/disconet",
+            "url": "https://disconet.herokuapp.com/",
+            "category": "Social Network",
+            "description": "lorem blablabalballbla",
+            "technologies": ["React", "Node", "Webpack"],
+            "img": {
+                "thump": "img/project-disconet.png",
+                "collection": []
+            }
+        },
+        {
+            "name": "Jaypexter",
+            "github": "https://github.com/vittod/jaypexter",
+            "url": "https://jaypexter.herokuapp.com/",
+            "category": "Image Board",
+            "description": "falaflaflaflfal falfalla fla fla",
+            "technologies": ["Vue", "Node"],
+            "img": {
+                "thump": "img/project-jaypexter.png",
+                "collection": []
+            }
+        },
+        {
+            "name": "Ab Jetzt",
+            "github": "",
+            "url": "https://ab-jetzt.org",
+            "category": "campaign page",
+            "description": "balla balla bla bla bla balla",
+            "technologies": ["Node", "p5", "matter.js"],
+            "img": {
+                "thump": "img/project-ab-jetzt.png",
+                "collection": []
+            }
+        }
+    ]
+}

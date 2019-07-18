@@ -1,12 +1,20 @@
+
 // wait until libs are loaded and gneral setup
 window.addEventListener('load', function() {
     // preload()
     // setup();
     // draw()
 
-    hookUpCollisionEvents()    
+    axios.get('/api/projects.json')
+        .then( ({data}) => {
+            // console.log('json', data)
+            projects = data.projects
+        })
+
 
 })
+
+//////////////////////////////////////////// require projects
 
 //////////////////////////////////////////// module aliases
 const Engine = Matter.Engine
@@ -26,7 +34,7 @@ const engine = Engine.create();
 const world = engine.world
 const navBar = $('#collapse-nav')
 //////////////////////////////////////////// app namespace
-let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLink, chainLinkTwo, magnet, magnetPic,
+let canvas, particle, globalPos, mouConst, mouse, currDrag, ripperTimer, chainLink, chainLinkTwo, magnet, magnetPic, projects,
     colliCount = 0,
     buttons = [],
     cards = [],
@@ -52,8 +60,7 @@ function setup() {
     ground = new Ground()
     Engine.run(engine)
 
-    createMouseConstraint()   
-    createChain()
+    
 }
 
 function windowResized() {
@@ -62,17 +69,25 @@ function windowResized() {
 
 //////////////////////////////////////////// events
 
-function keyPressed(e) {
-    // console.log('key', keyCode, e.key)
-    switch(e.key) {
-        case 'v': toggleGameView(); console.log('keyP', e.key); break
-    }
-}
+// function keyPressed(e) {
+//     console.log('key', keyCode, e.key)
+//     switch(e.key) {
+//         case 'Escape': toggleGameView();  break
+//     }
+// }
+
 function toggleGameView() {
     if (!gameIsVisible)  {
-        console.log('got here')
         canvas.origin.addClass('show-game')
         navBar.removeClass('translate-up')
+        ////
+        //   WARNING: unhook event when leaving the view
+        ////
+        // hookUpCollisionEvents()    
+        createMouseConstraint()   
+        createChain()
+        popProjects()
+
     } else {
         canvas.origin.removeClass('show-game')
         boxes.forEach(el => el.remove())
@@ -88,18 +103,25 @@ function toggleGameView() {
 }
 
 function moveLeft() {
-    Body.setVelocity(chain[0].body, {x: -10, y: 0})
-    Body.setPosition(chain[0].body, {x: chain[0].body.position.x - 5, y: chain[0].body.position.y})
+    if (chain[0].body.position.x > 50) {
+        Body.setVelocity(chain[0].body, {x: -10, y: 0})
+        Body.setPosition(chain[0].body, {x: chain[0].body.position.x - 5, y: chain[0].body.position.y})
+    }
 }
 function moveRight() {
-    // Body.setVelocity(chain[0].body, {x: -10, y: 0})
-    Body.setPosition(chain[0].body, {x: chain[0].body.position.x + 5, y: chain[0].body.position.y})
+    if (chain[0].body.position.x < windowWidth - 50) {
+        // Body.setVelocity(chain[0].body, {x: -10, y: 0})
+        Body.setPosition(chain[0].body, {x: chain[0].body.position.x + 5, y: chain[0].body.position.y})
+    }
 }
 function moveDown() {
-    // Body.setVelocity(chain[0].body, {x: -10, y: 0})
-    Body.setPosition(chain[0].body, {x: chain[0].body.position.x, y: chain[0].body.position.y + 5})
+    if (chain[0].body.position.y < -25) {
+        // Body.setVelocity(chain[0].body, {x: -10, y: 0})
+        Body.setPosition(chain[0].body, {x: chain[0].body.position.x, y: chain[0].body.position.y + 5})
+    }
 }
 function moveUp() {
+    if (chain[0].body.position.y > chain.length * -80)
     // Body.setVelocity(chain[0].body, {x: -10, y: 0})
     Body.setPosition(chain[0].body, {x: chain[0].body.position.x, y: chain[0].body.position.y - 5})
 }
@@ -107,59 +129,74 @@ function moveUp() {
 function hookUpCollisionEvents() {
     Events.on(engine, 'collisionActive', function(e) {
         pairs = e.pairs
-        pairs.forEach((el) => {
-            // console.log('bA', el.bodyA.id, 'bB', el.bodyB.id, 'chain', chain[chain.length - 1].id, 'box', boxes[boxes.lenth - 1].id)
-            if(boxes.length > 0 && !chain[chain.length - 1].isLocked) {
-                if (el.bodyA.id == chain[chain.length - 1].body.id || el.bodyA == boxes[boxes.length - 1].body.id
-                && el.bodyB.id == boxes[boxes.length - 1].body.id || el.bodyB == chain[chain.length - 1].body.id) {
-                    console.log('match', colliCount)
-                    colliCount += 1
-                    if (colliCount > 50) {
-                        lockBox(el.bodyA, el.bodyB)
-                    }
-                }
-            }
-        })
+        console.log('contact pars', pairs)
     })
 }
 
+// function hookUpCollisionEvents() {
+//     Events.on(engine, 'collisionActive', function(e) {
+//         pairs = e.pairs
+//         pairs.forEach((el) => {
+//             if(boxes.length > 0 && !chain[chain.length - 1].isLocked) {
+//                 if (el.bodyA.id == chain[chain.length - 1].body.id || el.bodyA == boxes[boxes.length - 1].body.id
+//                 && el.bodyB.id == boxes[boxes.length - 1].body.id || el.bodyB == chain[chain.length - 1].body.id) {
+//                     console.log('match', colliCount)
+//                     colliCount += 1
+//                     if (colliCount > 50) {
+//                         lockBox(el.bodyA, el.bodyB)
+//                     }
+//                 }
+//             }
+//         })
+//     })
+// }
+
 //////////////////////////////////////////// draw loop
 function draw() {
-    background(100)
-    boxes = boxes.filter((boxy, i) => {
-        if (!boxy.isOffscreen()) {
-            boxy.show()
-            return true
-        } else {
-            boxy.remove()
-            // boxes.spilce(i, 1)
-            cards[i].unhook()
-            cards.splice(i, 1)
-        }
-    })
-    cards.forEach((card, i) => card.move(i))
+    
+    background(100, 100, 100)
 
-    chain.forEach(el => el.show())
+    if (boxes.length > 0) {
+        boxes = boxes.filter((boxy, i) => {
+            if (!boxy.isOffscreen()) {
+                boxy.show()
+                return true
+            } else {
+                boxy.remove()
+                // boxes.spilce(i, 1)
+                cards[i].unhook()
+                cards.splice(i, 1)
+            }
+        })
+    }
 
-    // console.log('ang', constraints[0])
+    if (cards.length > 0) {
+        cards.forEach((card, i) => card.move(i))
+    }
 
-    constraints.forEach((el, i) => {
-        if (el.label && el.label == 'link') {
-       
-            let atano = atan((el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x) / el.length)
-            let linkCenter = createVector(
-                (el.bodyA.position.x + el.pointA.x - 2.5 + el.bodyB.position.x + el.pointB.x + 2.5) / 2,
-                (el.bodyA.position.y + el.pointA.y + el.bodyB.position.y + el.pointB.y) / 2
-            )
+    if (chain.length > 0) {
+        chain.forEach(el => el.show())
+    }
 
-            push()
-            translate(linkCenter.x, linkCenter.y)
-            imageMode(CENTER)
-            rotate(atano * -1)
-            image(chainLinkTwo, 0, 0, 5, 49)
-            pop()
-        }
-    })
+    if (constraints.length > 0) {
+        constraints.forEach((el, i) => {
+            if (el.label && el.label == 'link') {
+           
+                let atano = atan((el.bodyB.position.x + el.pointB.x - el.bodyA.position.x + el.pointA.x) / el.length)
+                let linkCenter = createVector(
+                    (el.bodyA.position.x + el.pointA.x - 2.5 + el.bodyB.position.x + el.pointB.x + 2.5) / 2,
+                    (el.bodyA.position.y + el.pointA.y + el.bodyB.position.y + el.pointB.y) / 2
+                )
+    
+                push()
+                translate(linkCenter.x, linkCenter.y)
+                imageMode(CENTER)
+                rotate(atano * -1)
+                image(chainLinkTwo, 0, 0, 5, 49)
+                pop()
+            }
+        })
+    }
 
     if (keyIsDown(LEFT_ARROW)) moveLeft()
     if (keyIsDown(RIGHT_ARROW)) moveRight()
@@ -171,11 +208,26 @@ function draw() {
 
 
 //////////////////////////////////////////// actions
-function createElm(){
-    boxes.push(new Box(mouseX, mouseY, 250, 300))
-    cards.push(new Card(mouseX, mouseY, 250, 300))
-    // magnets.push(new Magnet(mouseX, mouseY))
+
+function popProjects() {
+    setTimeout(() => {
+        if (cards.length < projects.length) {
+            let x = Math.random() * windowWidth
+            let y = windowHeight * 0.2
+            createElm(x, y, projects[cards.length])
+            popProjects()
+        }
+    }, 2000)
 }
+
+function createElm(x, y, project){
+    boxes.push(new Box(x, y, 150, 200))
+    cards.push(new Card(x, y, 150, 200, project))
+}
+// function createElm(x, y, project){
+//     boxes.push(new Box(mouseX, mouseY, 150, 200))
+//     cards.push(new Card(mouseX, mouseY, 150, 200, project))
+// }
 
 function createChain() {
     let chainOrigin = {x: windowWidth / 2, y: windowHeight / 6 * -1 }
@@ -191,7 +243,7 @@ function createChain() {
             xB = 0
             yB = -21
             len = 49
-            console.log('parti', parti)
+            // console.log('parti', parti)
         } else {
             option.mass = 20
             option.density = 0.5
@@ -239,34 +291,34 @@ function createMouseConstraint() {
     mouConst = MouseConstraint.create(engine, {mouse: mouse})
     World.add(world, mouConst)
 
-    Events.on(mouConst, 'startdrag', function(e) {
-        currDrag = e.body
-        if (constraints.length > 5) {
-            constraints.forEach((el, i) => {
-                if (currDrag.id == el.bodyA.id || currDrag.id == el.bodyB.id && el.body.label != 'link') startCheckRip(el, i)
-                // console.log('el', el)
-            })
-        }
-    })
-    Events.on(mouConst, 'enddrag', function(e) {
-        currDrag = null
-        endCheckRip()
-    })
+    // Events.on(mouConst, 'startdrag', function(e) {
+    //     currDrag = e.body
+    //     if (constraints.length > 5) {
+    //         constraints.forEach((el, i) => {
+    //             if (currDrag.id == el.bodyA.id || currDrag.id == el.bodyB.id && el.body.label != 'link') startCheckRip(el, i)
+    //             // console.log('el', el)
+    //         })
+    //     }
+    // })
+    // Events.on(mouConst, 'enddrag', function(e) {
+    //     currDrag = null
+    //     endCheckRip()
+    // })
 }   
 
-function startCheckRip(el, i) {
-    ripperTimer = setInterval(() => {
-        if (currDrag && currDrag.speed > 40) {
-            World.remove(world, el)
-            constraints.splice(i, 1)
-            console.log('interval', el, currDrag.speed)
-        }
-    }, 100);
-}
+// function startCheckRip(el, i) {
+//     ripperTimer = setInterval(() => {
+//         if (currDrag && currDrag.speed > 40) {
+//             World.remove(world, el)
+//             constraints.splice(i, 1)
+//             // console.log('interval', el, currDrag.speed)
+//         }
+//     }, 100);
+// }
 
-function endCheckRip() {
-    clearInterval(ripperTimer)
-}
+// function endCheckRip() {
+//     clearInterval(ripperTimer)
+// }
 
 //////////////////////////////////////////// element classes
 class Canvas {
@@ -276,7 +328,7 @@ class Canvas {
         this.h = h
     }
     tellCanvasArea() {
-        console.log('cavas is' + this.w + ' x ' + this.h)
+        console.log('canvas is' + this.w + ' x ' + this.h)
     }
 }
 
@@ -324,13 +376,16 @@ class Ground {
 
 
 class Card {
-    constructor(x, y, w, h) {
+    constructor(x, y, w, h, project) {
         this.origin = createDiv(`
-            <img src="img/DemoCard.png" class="card-img-top" alt="project logo img">
+            <img src="${project.img.thump}" class="card-img-top" alt="project logo img">
             <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <h5 class="card-title">${project.name}</h5>
+                <p class="card-text">${project.category}</p>
+                <div class="d-flex justify-content-end">
+                    <button href="#" class="btn btn-outline-secondary btn-sm disabled"><i class="fas fa-info"></i></button>
+                    <button href="#" class="btn btn-outline-danger btn-sm disabled"><i class="fas fa-eject"></i></button>
+                </div>
             </div>
         `)
             .class('card my-card')
@@ -415,9 +470,6 @@ class Box {
 
 class Magnet {
     constructor(x, y, w, h, option) {
-    //     this.points = setPathData(MAGNET_PATH)
-    //     console.log('points', this.points)
-    //     this.body = Bodies.fromVertices(x, y, Vertices.scale(this.points, 0.5, 0.5))
         this.body = Bodies.rectangle(x, y, w, h, option)
         this.pos = this.body.position
         this.w = w
@@ -433,16 +485,10 @@ class Magnet {
 
         push()
         translate(pos.x, pos.y)
-        // rectMode(CENTER)
-        // rect(0, 0, this.w, this.h)
         imageMode(CENTER)
         rotate(angle)
         imageMode(CENTER)
         image(magnetPic, 0, 0, 208, 75)
-
-        // beginShape()
-        // this.points.forEach(el => vertex(el.x, el.y))
-        // endShape()
         pop()
     }
 

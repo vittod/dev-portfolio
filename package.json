@@ -9,12 +9,17 @@
   "author": "marcus wagner",
   "license": "MIT",
   "dependencies": {
+    "@babel/polyfill": "^7.4.4",
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.0",
+    "@babel/preset-env": "^7.5.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
+    "http-proxy-middleware": "^0.19.1",
+    "uglifyjs-webpack-plugin": "^2.1.3",
     "webpack": "^4.35.0",
     "webpack-dev-middleware": "^3.7.0"
   }

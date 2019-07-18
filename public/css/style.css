@@ -1,7 +1,9 @@
 * {
     margin: 0;
-    
 }   
+body {
+    overflow: hidden;
+}
 
 section {
     position: fixed;
@@ -61,6 +63,8 @@ margin: 5px;
     height: 173px;
 }
 
+/*//////////////////////////////////// game ////////////////////////////////////  */
+
 .exit {
     position: absolute;
     top: 2.5em;
@@ -88,11 +92,26 @@ canvas#main-game {
 }
 
 .my-card {
-    width: 250px;
-    height: 300px;
-    /* pointer-events: none; */
+    width: 150px;
+    height: 200px;
 }
 .card-leave {
     transform: translateX(100%);
     transition-duration: 2s;
+}
+
+.card-title {
+    margin: 0;
+}
+}
+.card-body {
+    padding: 1rem;
+    padding-top: 0.5rem;
+}
+.card-text {
+    margin: 0;
+}
+.card-body button {
+    width: 30px;
+    margin-left: 3px;
 }
