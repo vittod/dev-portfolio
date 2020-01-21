@@ -10,18 +10,18 @@
   "author": "marcus wagner",
   "license": "MIT",
   "dependencies": {
-    "@babel/polyfill": "^7.6.0",
+    "@babel/polyfill": "^7.8.3",
     "express": "^4.17.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.0",
-    "@babel/preset-env": "^7.6.0",
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
     "http-proxy-middleware": "^0.19.1",
     "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.39.3",
-    "webpack-dev-middleware": "^3.7.1"
+    "webpack": "^4.41.5",
+    "webpack-dev-middleware": "^3.7.2"
   }
 }
