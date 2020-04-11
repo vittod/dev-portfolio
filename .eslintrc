@@ -1,0 +1,23 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true,
+        "jest": true
+    },
+    "plugins": ["prettier"],
+    "extends": ["eslint:recommended", "prettier"],
+    "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2018
+    },
+    "rules": {
+        "prettier/prettier": "error",
+        "no-unused-vars":"error",
+        "no-console": 2,
+        "eqeqeq": ["error", "always"],
+        "arrow-body-style": ["error", "as-needed"],
+        "no-duplicate-imports": 2
+    }
+}

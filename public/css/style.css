@@ -63,6 +63,17 @@ margin: 5px;
     height: 173px;
 }
 
+#offline-img {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    visibility: hidden;
+}
+
+#offline-img .show-elem {
+    visibility: visible;
+}
+
 /*//////////////////////////////////// game ////////////////////////////////////  */
 
 .exit {
@@ -103,7 +114,7 @@ canvas#main-game {
 .card-title {
     margin: 0;
 }
-}
+
 .card-body {
     padding: 1rem;
     padding-top: 0.5rem;

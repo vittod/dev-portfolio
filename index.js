@@ -1,10 +1,10 @@
-const express = require('express')
-const app = express()
-const fs = require('fs')
+const express = require('express');
+const app = express();
+const fs = require('fs');
 
-let projects = JSON.parse(fs.readFileSync(__dirname + '/src/db.json'))
+let projects = JSON.parse(fs.readFileSync(__dirname + '/src/db.json'));
 
-console.log('prod', process.env.NODE_ENV)
+console.log('prod', process.env.NODE_ENV);
 
 // if (process.env.NODE_ENV != 'production') {
 //     app.use(
@@ -15,12 +15,12 @@ console.log('prod', process.env.NODE_ENV)
 //         );
 // } else {
 //     app.use('/bundle.js', (req, res) => res.sendFile(`${__dirname}/bundle.js`))
-// }   
+// }
 
-app.use(express.static(__dirname + '/public'))
-    
+app.use(express.static(__dirname + '/public'));
+
 app.get('/api/projects.json', (req, res) => {
-    res.json(projects)
-})
+  res.json(projects);
+});
 
-app.listen(8080, () => console.log('server listening'))
+app.listen(8080, () => console.log('server listening on 8080'));
